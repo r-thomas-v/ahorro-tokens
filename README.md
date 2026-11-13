@@ -10,16 +10,17 @@ Necesitas [Claude Code](https://claude.com/claude-code) y Python 3.8 o superior.
 git clone https://github.com/r-thomas-v/ahorro-tokens.git
 cd ahorro-tokens
 ```
-```powershell
-# Windows
-powershell -ExecutionPolicy Bypass -File install.ps1
-```
 ```sh
-# macOS / Linux
-sh install.sh
+python instalar.py      # Windows
+python3 instalar.py     # macOS / Linux
 ```
+Un solo paso: instala la skill **y** deja activo el ahorro (aviso de contexto con la ruta correcta de tu sistema, bloqueo de lectura de `node_modules`/lockfiles/`.env`, auto-compactado al 25 % y reglas en `CLAUDE.md`). Solo añade, hace copias `.bak-FECHA` y se deshace con `/consumo deshacer`.
+Opciones: `--simular` (ver sin tocar nada), `--solo-skill` (solo copiar la skill, como `install.ps1`/`install.sh`), `--sin-conectores` (apagar Drive/Canva/etc. dentro de Claude Code).
+
 Sin git: botón verde **Code → Download ZIP**, descomprime y ejecuta el instalador.
-Luego abre Claude Code y escribe `/consumo`.
+Luego cierra y abre Claude Code y escribe `/consumo`.
+
+**¿Equipo o clase?** Lee [GUIA-EQUIPO.md](GUIA-EQUIPO.md) (sirve también para quien usa claude.ai web) y copia [`plantilla-proyecto/`](plantilla-proyecto/) al repo del trabajo en grupo.
 
 ## Comandos
 | Comando | Qué hace | ¿Modifica algo? |
