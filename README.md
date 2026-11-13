@@ -52,7 +52,13 @@ SESIONES MÁS CARAS
 Una sola sesión demasiado larga se llevó el 71% del mes.
 
 ## Por qué ahorra de verdad
-En Claude Code, **más del 90% del gasto suele ser "caché leída"**: cada mensaje re-envía todo el historial de la sesión. Por eso lo que más ahorra no es escribir menos, sino **tener sesiones cortas**. `/consumo` te muestra qué sesiones se pasaron, y `guardar` + `/clear` te permite cortarlas sin perder el hilo.
+En Claude Code, **más del 90% de los tokens suele ser "caché leída"**: cada mensaje re-envía todo el historial de la sesión. Esa caché **no es el problema** (ya va con 90% de descuento; sin ella pagarías 10x): es el síntoma de un **contexto demasiado grande**. Una sesión de 500k de contexto re-lee 500k en *cada* mensaje.
+
+Por eso `/consumo`:
+- muestra el **gasto real ponderado** (caché leída 0,1x, escrita 1,25x, salida 5x), la **base fija** de cada sesión y el **contexto medio** por mensaje;
+- **simula cuánto habrías ahorrado** haciendo `/clear` al pasar de 150k (en el ejemplo real: **-65%**);
+- instala un **aviso automático** (hook, opcional) que te avisa cuando el contexto pasa de 150k;
+- y `guardar` + `/clear` te deja cortar la sesión sin perder el hilo.
 
 ## Licencia
 MIT. Úsalo, cópialo y adáptalo libremente.

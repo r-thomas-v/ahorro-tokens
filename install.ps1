@@ -6,7 +6,10 @@ $base = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { Join-Path 
 $destino = Join-Path $base "skills\consumo"
 
 if (Test-Path $destino) {
-    $bak = "$destino.bak-$(Get-Date -Format yyyyMMdd-HHmmss)"
+    # La copia va FUERA de skills\: dentro, Claude la cargaria como una skill duplicada.
+    $carpetaBak = Join-Path $base "skills-backup"
+    New-Item -ItemType Directory -Force $carpetaBak | Out-Null
+    $bak = Join-Path $carpetaBak "consumo.bak-$(Get-Date -Format yyyyMMdd-HHmmss)"
     Move-Item $destino $bak
     Write-Host "Versión anterior respaldada en $bak"
 }

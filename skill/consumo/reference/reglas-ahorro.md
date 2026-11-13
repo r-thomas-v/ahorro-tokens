@@ -1,5 +1,6 @@
 # Los hábitos que más tokens ahorran (de mayor a menor impacto)
 
+0. **La caché leída no se apaga: se achica.** Es el historial re-leído en cada mensaje (ya con 90% de descuento). Lo caro es tener 500k de historial. Activa el aviso de contexto con `/consumo optimizar`.
 1. **Una tarea = una sesión.** Cada mensaje re-envía todo el historial. Una sesión de 1.000 mensajes cuesta muchísimo más que 10 sesiones de 100.
 2. **`/consumo guardar` → `/clear`** al terminar o cambiar de tarea. No pierdes nada: el estado queda en memoria.
 3. **`/compact`** si la tarea sigue pero la conversación ya es larga (pico de contexto >150k).

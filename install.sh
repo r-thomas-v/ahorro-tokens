@@ -6,7 +6,9 @@ ORIGEN="$(cd "$(dirname "$0")" && pwd)/skill/consumo"
 BASE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 DESTINO="$BASE/skills/consumo"
 if [ -e "$DESTINO" ]; then
-  BAK="$DESTINO.bak-$(date +%Y%m%d-%H%M%S)"
+  # La copia va FUERA de skills/: dentro, Claude la cargaría como una skill duplicada.
+  mkdir -p "$BASE/skills-backup"
+  BAK="$BASE/skills-backup/consumo.bak-$(date +%Y%m%d-%H%M%S)"
   mv "$DESTINO" "$BAK"
   echo "Versión anterior respaldada en $BAK"
 fi

@@ -15,6 +15,12 @@
     "Read(**/*.min.css)",
     "Read(**/*.map)"
   ],
+  "aviso": {
+    "_comentario": "Se añade dentro de hooks.UserPromptSubmit. Sustituir <RUTA_SKILL> por la ruta absoluta de la skill.",
+    "hooks": [
+      { "type": "command", "command": "python -I \"<RUTA_SKILL>/scripts/aviso_contexto.py\"", "timeout": 10 }
+    ]
+  },
   "secretos": [
     "Read(**/.env)",
     "Read(**/.env.local)",

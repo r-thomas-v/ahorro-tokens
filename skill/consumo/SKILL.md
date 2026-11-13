@@ -34,11 +34,13 @@ Objetivo: que el usuario pueda hacer `/clear` sin perder nada y sin re-explicar 
 2. Muestra en una lista corta qué reglas `permissions.deny` faltan y para qué sirve cada grupo:
    - **Pesados** (node_modules, .next, dist, build, lockfiles, .git, minificados): evitan que Claude lea miles de líneas inútiles. Ahorro directo.
    - **Secretos** (.env, claves): seguridad; Claude no podrá leerlos con Read.
-3. Pregunta con AskUserQuestion qué grupos aplicar (Pesados recomendado; Secretos recomendado; también "Reglas de trabajo en CLAUDE.md").
+   - **Aviso de contexto** (hook): antes de cada mensaje mide el contexto y, si pasa de 150k, avisa para hacer `/consumo guardar` + `/clear`. Es el que más ahorra: ataca la causa de la caché leída.
+3. Pregunta con AskUserQuestion qué grupos aplicar (Aviso de contexto recomendado; Pesados recomendado; Secretos recomendado; también "Reglas de trabajo en CLAUDE.md").
 4. Antes de escribir: copia `settings.json` a `settings.json.bak-AAAAMMDD-HHMMSS` en la misma carpeta.
 5. **Solo AÑADE** entradas a `permissions.deny` (no borres ni cambies nada existente; no dupliques). Verifica que el JSON resultante es válido (`python -c "import json;json.load(open(...))"`). Si algo falla, restaura la copia.
-6. Si eligió "Reglas en CLAUDE.md": añade al final de `~/.claude/CLAUDE.md` (créalo si no existe; si existe, cópialo antes a `.bak-…`) el bloque de `reference/claude-md-ahorro.md` **incluyendo sus marcadores** `<!-- consumo:inicio -->` / `<!-- consumo:fin -->`. Si los marcadores ya existen, reemplaza solo lo que hay entre ellos.
-7. Avisa honestamente: la regla Read no impide que un comando de Bash lea esos archivos; es una barrera de ahorro y de buenas prácticas, no una caja fuerte.
+6. Si eligió "Aviso de contexto": añade en `hooks.UserPromptSubmit` del `settings.json` (sin tocar hooks existentes; si ya hay uno con `aviso_contexto.py`, no lo dupliques) la entrada de `reference/settings-ahorro.json` → `aviso`, sustituyendo `<RUTA_SKILL>` por la ruta absoluta de esta skill con barras `/`. Prueba el comando una vez pasándole `{"transcript_path": "<un .jsonl real>"}` por stdin con `CONSUMO_AVISO=1000` y comprueba que imprime JSON. Umbral configurable con la variable de entorno `CONSUMO_AVISO` (en `env` del settings).
+7. Si eligió "Reglas en CLAUDE.md": añade al final de `~/.claude/CLAUDE.md` (créalo si no existe; si existe, cópialo antes a `.bak-…`) el bloque de `reference/claude-md-ahorro.md` **incluyendo sus marcadores** `<!-- consumo:inicio -->` / `<!-- consumo:fin -->`. Si los marcadores ya existen, reemplaza solo lo que hay entre ellos.
+8. Avisa honestamente: la regla Read no impide que un comando de Bash lea esos archivos; es una barrera de ahorro y de buenas prácticas, no una caja fuerte.
 
 ### `/consumo deshacer`
 Lista las copias `settings.json.bak-*` y `CLAUDE.md.bak-*`, pregunta cuál restaurar, y restaura copiando la copia encima (dejando a su vez una copia del estado actual). Para el bloque de CLAUDE.md basta con borrar lo que hay entre los marcadores `consumo`.
@@ -47,7 +49,11 @@ Lista las copias `settings.json.bak-*` y `CLAUDE.md.bak-*`, pregunta cuál resta
 Muestra `reference/reglas-ahorro.md` (los hábitos que más ahorran).
 
 ## Cómo leer los números (para explicarlo si preguntan)
-- **Caché leída**: cada mensaje vuelve a enviar TODO el historial de la sesión. Suele ser >90% del gasto. Es más barata por token, pero cuenta contra los límites del plan. Se reduce con sesiones cortas, `/clear` y `/compact`.
+- **Caché leída**: cada mensaje vuelve a enviar TODO el historial de la sesión. Suele ser >90% de los tokens, pero ya va con 90% de descuento; sin caché costaría 10x más. **No es el problema, es el síntoma**: no se "apaga", se reduce achicando el contexto (sesiones cortas, `/clear`, `/compact`, el aviso de contexto).
+- **Gasto real (ponderado)**: pesa cada tipo como la API (leída 0,1x, escrita 1,25x, salida 5x). Muestra qué cuesta de verdad.
+- **Base fija**: contexto del primer mensaje (prompt, herramientas, CLAUDE.md, memoria). Se paga en cada mensaje; se baja quitando conectores MCP que no uses.
+- **Ahorro con /clear**: simulación de cuánto menos se habría gastado volviendo a la base cada vez que el contexto pasaba de 150k.
+- **Recargas de caché**: tras ~5 min sin actividad la caché caduca y se re-escribe todo el historial a 1,25x. Tras una pausa, mejor sesión nueva con la nota de traspaso.
 - **Pico de contexto**: lo grande que llegó a ser la conversación. >150k = cada mensaje cuesta muchísimo.
 - **Resultados pesados**: lecturas/capturas/herramientas que metieron mucho texto de golpe.
 - No se muestran precios en dinero: dependen del plan y del modelo, y el script no inventa cifras.
